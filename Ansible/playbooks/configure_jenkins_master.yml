@@ -1,0 +1,66 @@
+---
+- name: Setup Jenkins Master
+  hosts: jenkins_master
+  become: yes
+  tasks:
+    - name: Ensure .ssh directory exists for Jenkins user
+      file:
+        path: /var/lib/jenkins/.ssh
+        state: directory
+        owner: jenkins
+        group: jenkins
+        mode: '0700'
+
+    - name: Copy private key to Jenkins master
+      copy:
+        src: /Users/ikobilynch/Desktop/CapstoneProject/ssh-keys/id_rsa
+        dest: /var/lib/jenkins/.ssh/id_rsa
+        owner: jenkins
+        group: jenkins
+        mode: '0600'
+    
+    - name: Copy public key from local to Jenkins master
+      copy:
+        src: /Users/ikobilynch/Desktop/CapstoneProject/ssh-keys/id_rsa.pub
+        dest: /var/lib/jenkins/.ssh/id_rsa.pub
+        owner: jenkins
+        group: jenkins
+        mode: '0600'
+
+    - name: Copy public key to authorized_keys
+      shell: "cat /var/lib/jenkins/.ssh/id_rsa.pub >> /var/lib/jenkins/.ssh/authorized_keys"
+      args:
+        executable: /bin/bash
+
+- name: Print instructions for UI setup
+  hosts: localhost
+  tasks:
+    - name: Print instructions for UI setup
+      debug:
+        msg: |
+          THE REST IS TO BE DONE BY UI. OPEN SCRIPT FOR HELP.
+          Remember you should have the private RSA key copied to the clipboard or stored somewhere. It is needed in the UI stage.
+
+          1. Navigate to Jenkins master web interface at http://<PUBLIC_IP_OF_JENKINS_CONTROLLER>:8080
+          2. Sign in
+          3. On Manage Jenkins page, click Nodes
+          4. At the top of the page, click + New Node
+          5. Fill in the values:
+             - Node name: worker1
+             - Permanent agent, click create
+             - Number of executors: Enter 2
+             - Remote root directory: Enter /var/lib/jenkins
+             - Labels: Enter linux
+             - Launch method: Select Launch agents via SSH
+             - Host: Enter the public IP address of the agent node
+             - Credentials: Click Add > Jenkins
+               - Kind: Select SSH Username with private key
+               - Description: Enter jssh
+               - Username: Enter jenkins
+               - Private Key: Select Enter directly, click Add, and paste in the id_rsa private key you copied earlier
+               - Click Add
+               - Credentials: Click - none -, and select jenkins (jssh)
+          6. Leave the rest as their defaults, and click Save
+          7. On the Nodes page, click worker1
+          8. In the left-hand menu, click Log to make sure there was a successful SSH authentication
+             - If you see in the log an entry that says "Agent successfully connected and online", then it all worked correctly.

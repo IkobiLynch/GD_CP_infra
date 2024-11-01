@@ -1,0 +1,99 @@
+---
+- name: Setup Jenkins Slave Nodes
+  hosts: jenkins_slaves
+  become: yes
+  tasks:
+    - name: Add Jenkins user with home directory
+      user:
+        name: jenkins
+        home: /var/lib/jenkins
+        create_home: no
+        shell: /bin/bash
+
+    - name: Create Jenkins home directory
+      file:
+        path: /var/lib/jenkins
+        state: directory
+        owner: jenkins
+        group: jenkins
+        mode: '0755'
+
+    - name: Ensure Jenkins owns the home directory
+      file:
+        path: /var/lib/jenkins
+        state: directory
+        owner: jenkins
+        group: jenkins
+        recurse: yes
+
+    - name: Create .ssh directory for Jenkins user
+      file:
+        path: /var/lib/jenkins/.ssh
+        state: directory
+        owner: jenkins
+        group: jenkins
+        mode: '0700'
+
+    - name: Copy private key from local to remote server
+      copy:
+        src: /Users/ikobilynch/Desktop/CapstoneProject/ssh-keys/id_rsa
+        dest: /var/lib/jenkins/.ssh/id_rsa
+        owner: jenkins
+        group: jenkins
+        mode: '0600'
+
+    - name: Copy public key from local to remote server
+      copy:
+        src: /Users/ikobilynch/Desktop/CapstoneProject/ssh-keys/id_rsa.pub
+        dest: /var/lib/jenkins/.ssh/id_rsa.pub
+        owner: jenkins
+        group: jenkins
+        mode: '0644'
+
+    - name: Copy public key to authorized_keys
+      shell: "cat /var/lib/jenkins/.ssh/id_rsa.pub >> /var/lib/jenkins/.ssh/authorized_keys"
+      args:
+        executable: /bin/bash
+
+    - name: Ensure correct permissions for authorized_keys
+      file:
+        path: /var/lib/jenkins/.ssh/authorized_keys
+        state: file
+        owner: jenkins
+        group: jenkins
+        mode: '0600'
+
+    - name: Detect Debian-based system and install Java
+      when: ansible_os_family == "Debian"
+      block:
+        - name: Update apt package index
+          apt:
+            update_cache: yes
+
+        - name: Install Java
+          apt:
+            name: openjdk-11-jdk
+            state: present
+
+        - name: Ensure JAVA_HOME is set globally
+          lineinfile:
+            path: /etc/environment
+            line: 'JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64'
+            state: present
+
+    - name: Detect Red Hat-based system and install Java
+      when: ansible_os_family == "RedHat"
+      block:
+        - name: Install Java
+          yum:
+            name: java-11-openjdk
+            state: present
+
+        - name: Ensure JAVA_HOME is set globally
+          lineinfile:
+            path: /etc/environment
+            line: 'JAVA_HOME=/usr/lib/jvm/java-11-openjdk'
+            state: present
+
+    - name: Reload environment variables
+      ansible.builtin.command: /bin/bash -c "source /etc/environment"

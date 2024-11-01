@@ -1,0 +1,92 @@
+---
+- name: Install and Start Jenkins
+  hosts: jenkins_master
+  become: yes
+  tasks:
+    - name: Detect Debian-based system and install dependencies
+      when: ansible_os_family == "Debian"
+      block:
+        - name: Update apt package index
+          apt:
+            update_cache: yes
+
+        - name: Install dependencies
+          apt:
+            name:
+              - fontconfig
+              - openjdk-17-jdk
+              - wget
+              - gnupg2
+            state: present
+
+        - name: Download Jenkins repo key
+          apt_key:
+            url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+            state: present
+
+        - name: Add Jenkins repository
+          apt_repository:
+            repo: deb http://pkg.jenkins.io/debian-stable binary/
+            state: present
+
+        - name: Update apt package index again
+          apt:
+            update_cache: yes
+
+        - name: Install Jenkins
+          apt:
+            name: jenkins
+            state: present
+
+    - name: Detect Red Hat-based system and install dependencies
+      when: ansible_os_family == "RedHat"
+      block:
+        - name: Install dependencies
+          yum:
+            name:
+              - fontconfig
+              - java-17-openjdk
+              - wget
+            state: present
+
+        - name: Download Jenkins repo file
+          get_url:
+            url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+            dest: /etc/yum.repos.d/jenkins.repo
+
+        - name: Import Jenkins repo key
+          rpm_key:
+            key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+            state: present
+
+        - name: Install Jenkins
+          yum:
+            name: jenkins
+            state: present
+
+    - name: Reload systemd manager configuration
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable Jenkins service
+      systemd:
+        name: jenkins
+        enabled: yes
+
+    - name: Start Jenkins service
+      systemd:
+        name: jenkins
+        state: started
+
+    - name: Retrieve initial Jenkins admin password
+      command: cat /var/lib/jenkins/secrets/initialAdminPassword
+      register: initial_admin_password
+
+    - name: Save initial Jenkins admin password to a file
+      copy:
+        content: "{{ initial_admin_password.stdout }}"
+        dest: /tmp/initialAdminPassword.txt
+
+    - name: Print initial Jenkins admin password
+      debug:
+        msg: "Jenkins installation completed. The initial admin password is saved in /tmp/initialAdminPassword.txt and is: {{ initial_admin_password.stdout }}"
