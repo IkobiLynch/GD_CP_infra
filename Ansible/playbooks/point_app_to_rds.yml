@@ -3,7 +3,6 @@
   hosts: app_servers
   become: yes
   vars:
-    - terraform_outputs.json # Load outputs as variables
     db_host: "{{ rds_endpoint }}"
     db_name: "ilynchDB"
     db_user: "myusername"
