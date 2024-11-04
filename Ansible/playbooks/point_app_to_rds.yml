@@ -1,0 +1,29 @@
+---
+- name: Configure application instances to use RDS
+  hosts: app_servers
+  become: yes
+  vars:
+    - terraform_outputs.json # Load outputs as variables
+    db_host: "{{ rds_endpoint }}"
+    db_name: "ilynchDB"
+    db_user: "myusername"
+    db_password: "mypassword"
+
+  tasks:
+    - name: Set environment variables for database connection
+      ansible.builtin.lineinfile:
+        path: /etc/environment
+        line: "{{ item }}"
+        create: yes
+        state: present
+      
+      loop:
+        - "DB_HOST={{ db_host }}"
+        - "DB_NAME={{ db_name }}"
+        - "DB_PASSWORD={{ db_password }}"
+      notify: Reload Environment Variables
+
+  handlers:
+    - name: Reload Environment Variables
+      ansible.builtin.command: /bin/bash -c "source /etc/environment"
+      become: yes

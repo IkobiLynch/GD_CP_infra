@@ -34,6 +34,10 @@ module "compute" {
   instance_type      = var.instance_type
 }
 
+module "rds" {
+  source = "./modules/RDS"
+}
+
 module "load_balancer" {
   source          = "./modules/load_balancer"
   vpc_id          = module.network.vpc_id
@@ -59,4 +63,8 @@ output "jenkins_instance_ips" {
 
 output "load_balancer_dns" {
   value = module.load_balancer.dns_name
+}
+
+output "rds_endpoint" {
+  value = module.rds.rds_endpoint
 }

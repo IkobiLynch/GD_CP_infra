@@ -1,0 +1,42 @@
+{
+  "application_instance_ips": {
+    "sensitive": false,
+    "type": [
+      "tuple",
+      [
+        "string",
+        "string"
+      ]
+    ],
+    "value": [
+      "10.0.0.215",
+      "10.0.1.144"
+    ]
+  },
+  "jenkins_instance_ips": {
+    "sensitive": false,
+    "type": [
+      "tuple",
+      [
+        "string",
+        "string",
+        "string"
+      ]
+    ],
+    "value": [
+      "10.0.0.187",
+      "10.0.1.99",
+      "10.0.0.184"
+    ]
+  },
+  "load_balancer_dns": {
+    "sensitive": false,
+    "type": "string",
+    "value": "ilynch-lb-110537822.us-east-1.elb.amazonaws.com"
+  },
+  "rds_endpoint": {
+    "sensitive": false,
+    "type": "string",
+    "value": "terraform-20241102004139871700000001.cma1xp5df2gi.us-east-1.rds.amazonaws.com:5432"
+  }
+}

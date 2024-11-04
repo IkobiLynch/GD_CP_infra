@@ -72,13 +72,13 @@
 
         - name: Install Java
           apt:
-            name: openjdk-11-jdk
+            name: openjdk-17-jdk
             state: present
 
         - name: Ensure JAVA_HOME is set globally
           lineinfile:
             path: /etc/environment
-            line: 'JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64'
+            line: 'JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64'
             state: present
 
     - name: Detect Red Hat-based system and install Java
@@ -86,13 +86,13 @@
       block:
         - name: Install Java
           yum:
-            name: java-11-openjdk
+            name: java-17-openjdk
             state: present
 
         - name: Ensure JAVA_HOME is set globally
           lineinfile:
             path: /etc/environment
-            line: 'JAVA_HOME=/usr/lib/jvm/java-11-openjdk'
+            line: 'JAVA_HOME=/usr/lib/jvm/java-17-openjdk'
             state: present
 
     - name: Reload environment variables

@@ -4,7 +4,7 @@ resource "aws_instance" "application" {
   instance_type = var.instance_type
   subnet_id     = element(var.subnet_ids, count.index)
   key_name      = var.ssh_key_name
-  security_groups = [ var.security_group_id ]
+  vpc_security_group_ids = [var.security_group_id]
 
   user_data = file("${path.root}/../Scripts/install_basic_dependencies.sh")
 
@@ -19,11 +19,13 @@ resource "aws_instance" "jenkins" {
   instance_type = var.instance_type
   subnet_id     = element(var.subnet_ids, count.index)
   key_name      = var.ssh_key_name
-  security_groups = [ var.security_group_id ]
+  vpc_security_group_ids = [var.security_group_id]
 
   user_data = file("${path.root}/../Scripts/install_basic_dependencies.sh")
 
-
+  lifecycle {
+    ignore_changes = [user_data]
+  }
   tags = {
     Name = "ilynch-jenkins-instance-${count.index + 1}"
   }
