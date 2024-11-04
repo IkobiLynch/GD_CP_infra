@@ -2,11 +2,13 @@
 - name: Configure application instances to use RDS
   hosts: app_servers
   become: yes
+  vars_files:
+    - terraform_outputs.json
   vars:
     db_host: "{{ rds_endpoint }}"
     db_name: "ilynchDB"
     db_user: "myusername"
-    db_password: "mypassword"
+    db_password: "{{ lookup('env', 'db_password') }}"  # Use environment variable for db_password which = "mypassword"
 
   tasks:
     - name: Set environment variables for database connection
