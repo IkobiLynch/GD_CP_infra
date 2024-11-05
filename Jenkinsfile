@@ -49,20 +49,21 @@ pipeline {
 
         stage('Configure Virtual Machines with Ansible') {
             steps {
-                echo 'Running Ansible playbooks for software installation...'
+                script {
+                    echo 'Running Ansible playbooks for software installation...'
 
-                // List of playbooks to run
-                def playbooks = ['Ansible/playbooks/point_app_to_rds.yml', 'Ansible/playbooks/install_docker_dockercompose.yml']
+                    // List of playbooks to run
+                    def playbooks = ['Ansible/playbooks/point_app_to_rds.yml', 'Ansible/playbooks/install_docker_dockercompose.yml']
 
-                for (playbook in playbooks) {
-                    ansiblePlaybook credentialsId: 'ssh-key-id',
-                                    inventory: 'Ansible/inventory.ini',
-                                    playbook: playbook,
-                                    extraVars: [
-                                        'db_host': sh(script: "jq -r .rds_endpoint.value Ansible/terraform_outputs.json", returnStdout: true).trim()
-                                    ]
+                    for (playbook in playbooks) {
+                        ansiblePlaybook credentialsId: 'ssh-key-id',
+                                        inventory: 'Ansible/inventory.ini',
+                                        playbook: playbook,
+                                        extraVars: [
+                                            'db_host': sh(script: "jq -r .rds_endpoint.value Ansible/terraform_outputs.json", returnStdout: true).trim()
+                                        ]
+                    }
                 }
-                
             }
         }
 
