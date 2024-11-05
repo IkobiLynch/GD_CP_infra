@@ -100,14 +100,23 @@ pipeline {
 
         stage('Destroy Resources') {
             steps {
-                input message: 'Do you want to destroy the resources?'
-                echo 'Destroying Terraform-managed infrastructure...'
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-access-keys-cred']]) {
-                    dir('infra') {
-                        sh 'terraform destroy -auto-approve'
+                script {
+                    def destroyResources = input(
+                        message: 'Do you want to destroy the resources?',
+                        parameters: [choice(name: 'Proceed with Destroy', choices: ['Yes', 'No'], description: 'Select "Yes" to destroy resources, "No" to skip')]
+                    )
+
+                    if (destroyResources == 'Yes') {
+                        echo 'Destroying Terraform-managed infrastructure...'
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-access-keys-cred']]) {
+                            dir('infra') {
+                                sh 'terraform destroy -auto-approve'
+                            }
+                        }
+                    } else {
+                        echo 'Skipping resource destruction as per user choice.'
                     }
-                }
-                
+                }                
             }
         }
     }
