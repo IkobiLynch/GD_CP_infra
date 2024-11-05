@@ -10,11 +10,13 @@ pipeline {
 
         stage('Install Terraform with Ansible') {
             steps {
+
+                sh 'ls -l ${env.SSH_KEY}'
                 // Run the Ansible playbook to install Terraform if it's not installed
                 withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-id', keyFileVariable: 'SSH_KEY')]) {
                     ansiblePlaybook inventory: 'Ansible/inventory.ini',
                                     playbook: 'Ansible/playbooks/install_terraform.yml',
-                                    extras: "--private-key=${env.SSH_KEY}"
+                                    extras: "--private-key=${env.SSH_KEY} -vvv"
                 }  
             }
         }
@@ -78,7 +80,7 @@ pipeline {
                         }
                     }
                 }
-                
+
             }
         }
 
