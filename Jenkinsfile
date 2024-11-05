@@ -53,7 +53,6 @@ pipeline {
             steps {
                 echo 'Planning Terraform changes...'
                 dir('infra') {
-                    sh 'terraform init'
                     sh 'terraform plan -out=tfplan'
                 }
             }
