@@ -52,8 +52,10 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 echo 'Planning Terraform changes...'
-                dir('infra') {
-                    sh 'terraform plan -out=tfplan'
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-access-keys-cred']]) {
+                    dir('infra') {
+                        sh 'terraform plan -out=tfplan'
+                    }
                 }
             }
         }
@@ -62,10 +64,13 @@ pipeline {
             steps {
                 input message: 'Do you want to provision the resources?'
                 echo 'Applying Terraform changes...'
-                dir('infra') {
-                    sh 'terraform apply -auto-approve tfplan'
-                    sh 'terraform output -json > ../Ansible/terraform_outputs.json'
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-access-keys-cred']]) {
+                    dir('infra') {
+                        sh 'terraform apply -auto-approve tfplan'
+                        sh 'terraform output -json > ../Ansible/terraform_outputs.json'
+                    }
                 }
+                
             }
         }
 
@@ -97,9 +102,12 @@ pipeline {
             steps {
                 input message: 'Do you want to destroy the resources?'
                 echo 'Destroying Terraform-managed infrastructure...'
-                dir('infra') {
-                    sh 'terraform destroy -auto-approve'
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-access-keys-cred']]) {
+                    dir('infra') {
+                        sh 'terraform destroy -auto-approve'
+                    }
                 }
+                
             }
         }
     }
