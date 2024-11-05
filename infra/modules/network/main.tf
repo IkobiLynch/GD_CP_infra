@@ -26,10 +26,10 @@ resource "aws_route_table" "public_rt" {
 }
 
 resource "aws_subnet" "subnet" {
-  count             = 2
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index)
-  availability_zone = element(var.availability_zones, count.index)
+  count                   = 2
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index)
+  availability_zone       = element(var.availability_zones, count.index)
   map_public_ip_on_launch = true
   tags = {
     Name = "ilynch-subnet-${count.index + 1}"
@@ -39,8 +39,8 @@ resource "aws_subnet" "subnet" {
 resource "aws_route_table_association" "public_rt_association" {
   count = length(aws_subnet.subnet)
 
-  subnet_id = aws_subnet.subnet[count.index].id # Associate each subnet
-  route_table_id = aws_route_table.public_rt.id # Associate with public route table
+  subnet_id      = aws_subnet.subnet[count.index].id # Associate each subnet
+  route_table_id = aws_route_table.public_rt.id      # Associate with public route table
 }
 
 resource "aws_security_group" "app_sg" {
@@ -57,20 +57,20 @@ resource "aws_security_group" "app_sg" {
 
   # Allow HTTP traffic (port 80)
   ingress {
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Allow HTTP traffic (port 8080)
   ingress {
-    from_port = 8080
-    to_port = 8080
-    protocol = "tcp"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   # Allow all outgoing traffic
   egress {
     from_port   = 0

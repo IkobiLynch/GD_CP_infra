@@ -4,7 +4,7 @@ variable "vpc_cidr" {
 }
 
 variable "availability_zones" {
-  type = list(string)
+  type    = list(string)
   default = ["us-east-1a", "us-east-1b"]
 }
 
@@ -25,7 +25,7 @@ variable "ssh_private_key" {
 
 variable "ami_id" {
   type    = string
-  default = "ami-04a81a99f5ec58529" 
+  default = "ami-04a81a99f5ec58529"
 }
 
 variable "instance_type" {

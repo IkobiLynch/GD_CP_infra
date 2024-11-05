@@ -19,6 +19,6 @@ variable "availability_zones" {
 }
 
 variable "instance_ids" {
-  type = map(string)
+  type        = map(string)
   description = "Map of instance IDs to attach to the target group"
 }
