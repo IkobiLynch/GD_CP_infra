@@ -1,0 +1,44 @@
+---
+- name: Install Ansible on remote servers
+  hosts: all  # Update this with your target hosts group or specific hosts
+  become: yes  # Escalates privilege to root for package installation
+  tasks:
+
+    - name: Check if Ansible is already installed
+      command: ansible --version
+      register: ansible_check
+      ignore_errors: yes
+
+    - name: Install Ansible on Debian-based systems
+      apt:
+        name: ansible
+        update_cache: yes
+        state: latest
+      when:
+        - ansible_check.failed  # Only run if Ansible is not already installed
+        - ansible_os_family == "Debian"
+
+    - name: Install EPEL repository on RedHat-based systems (for Ansible dependencies)
+      yum:
+        name: epel-release
+        state: present
+      when:
+        - ansible_check.failed
+        - ansible_os_family == "RedHat"
+
+    - name: Install Ansible on RedHat-based systems
+      yum:
+        name: ansible
+        state: latest
+      when:
+        - ansible_check.failed
+        - ansible_os_family == "RedHat"
+
+    - name: Confirm Ansible installation
+      command: ansible --version
+      when: ansible_check.failed
+      register: ansible_version
+
+    - debug:
+        msg: "Ansible version installed: {{ ansible_version.stdout }}"
+      when: ansible_check.failed

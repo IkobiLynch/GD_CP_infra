@@ -8,35 +8,6 @@ pipeline {
 
     stages {
         
-        stage('Install Ansible') {
-            steps {
-                script {
-                    // Check if Ansible is installed; if not, install it
-                    def ansibleInstalled = sh(script: 'which ansible', returnStatus: true) == 0
-                    if (!ansibleInstalled) {
-                        echo 'Ansible not found. Installing Ansible...'
-                        // Install Ansible based on the OS
-                        sh '''
-                            if [ -f /etc/debian_version ]; then
-                                # Ubuntu/Debian
-                                sudo apt update
-                                sudo apt install -y ansible
-                            elif [ -f /etc/redhat-release ]; then
-                                # CentOS/RHEL
-                                sudo yum install -y epel-release
-                                sudo yum install -y ansible
-                            else
-                                echo "Unsupported OS. Please install Ansible manually."
-                                exit 1
-                            fi
-                        '''
-                    } else {
-                        echo 'Ansible is already installed.'
-                    }
-                }
-            }
-        }
-
         stage('Install Terraform with Ansible') {
             steps {
                 // Run the Ansible playbook to install Terraform if it's not installed
