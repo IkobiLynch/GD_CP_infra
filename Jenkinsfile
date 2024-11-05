@@ -7,13 +7,15 @@ pipeline {
     }
 
     stages {
-        
+
         stage('Install Terraform with Ansible') {
             steps {
                 // Run the Ansible playbook to install Terraform if it's not installed
-                ansiblePlaybook credentialsId: 'ssh-key-id',
-                                inventory: 'Ansible/inventory.ini',  
-                                playbook: 'Ansible/playbooks/install_terraform.yml'  
+                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-id', keyFileVariable: 'SSH_KEY')]) {
+                    ansiblePlaybook inventory: 'Ansible/inventory.ini',
+                                    playbook: 'Ansible/playbooks/install_terraform.yml',
+                                    extras: "--private-key=${env.SSH_KEY}"
+                }  
             }
         }
 
@@ -58,21 +60,25 @@ pipeline {
 
         stage('Configure Virtual Machines with Ansible') {
             steps {
-                script {
-                    echo 'Running Ansible playbooks for software installation...'
 
-                    // List of playbooks to run
-                    def playbooks = ['Ansible/playbooks/point_app_to_rds.yml', 'Ansible/playbooks/install_docker_dockercompose.yml']
+                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-id', keyFileVariable: 'SSH_KEY')]) {
+                    script {
+                        echo 'Running Ansible playbooks for software installation...'
 
-                    for (playbook in playbooks) {
-                        ansiblePlaybook credentialsId: 'ssh-key-id',
-                                        inventory: 'Ansible/inventory.ini',
-                                        playbook: playbook,
-                                        extraVars: [
-                                            'db_host': sh(script: "jq -r .rds_endpoint.value Ansible/terraform_outputs.json", returnStdout: true).trim()
-                                        ]
+                        // List of playbooks to run
+                        def playbooks = ['Ansible/playbooks/point_app_to_rds.yml', 'Ansible/playbooks/install_docker_dockercompose.yml']
+
+                        for (playbook in playbooks) {
+                            ansiblePlaybook inventory: 'Ansible/inventory.ini',
+                                            playbook: playbook,
+                                            extras: "--private-key=${env.SSH_KEY}",
+                                            extraVars: [
+                                                'db_host': sh(script: "jq -r .rds_endpoint.value Ansible/terraform_outputs.json", returnStdout: true).trim()
+                                            ]
+                        }
                     }
                 }
+                
             }
         }
 
