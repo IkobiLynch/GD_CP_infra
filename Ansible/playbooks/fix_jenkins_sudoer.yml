@@ -1,0 +1,12 @@
+---
+- name: Allow Jenkins user to use sudo without a password
+  hosts: all
+  become: yes
+  tasks:
+    - name: Add Jenkins user to sudoers with NOPASSWD
+      lineinfile:
+        path: /etc/sudoers.d/jenkins
+        create: yes
+        mode: '0440'
+        line: "jenkins ALL=(ALL) NOPASSWD: ALL"
+      tags: allow_sudo
