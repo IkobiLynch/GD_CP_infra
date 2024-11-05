@@ -10,4 +10,3 @@
         mode: '0440'
         line: "jenkins ALL=(ALL) NOPASSWD: ALL"
       tags: allow_sudo
-
