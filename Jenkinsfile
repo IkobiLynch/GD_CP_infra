@@ -39,6 +39,14 @@ pipeline {
             }
         }
 
+        stage('Initilize Terraform') {
+            steps {
+                dir('infra') {
+                    sh 'terraform init -input=false'
+                }
+            }
+        }
+
         stage('Terraform Plan') {
             steps {
                 echo 'Planning Terraform changes...'
