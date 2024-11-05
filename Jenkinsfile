@@ -30,19 +30,19 @@ pipeline {
             }
         }
 
+        stage('Initilize Terraform') {
+            steps {
+                dir('infra') {
+                    sh 'terraform init -input=false'
+                }
+            }
+        }
+
         stage('Configuration Validation') {
             steps {
                 echo 'Validating Terraform configuration...'
                 dir('infra') {
                     sh 'terraform validate'
-                }
-            }
-        }
-
-        stage('Initilize Terraform') {
-            steps {
-                dir('infra') {
-                    sh 'terraform init -input=false'
                 }
             }
         }
