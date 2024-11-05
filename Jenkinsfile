@@ -16,7 +16,7 @@ pipeline {
 
                     ansiblePlaybook inventory: 'Ansible/inventory.ini',
                                     playbook: 'Ansible/playbooks/install_terraform.yml',
-                                    extras: "--private-key=${env.SSH_KEY} -vvv"
+                                    extras: "--private-key=${env.SSH_KEY}"
                 }  
             }
         }
