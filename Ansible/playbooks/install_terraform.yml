@@ -1,0 +1,49 @@
+---
+- name: Ensure Terraform is installed
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: Check if Terraform is already installed
+      command: terraform --version
+      register: terraform_installed
+      ignore_errors: yes
+
+    - name: Download and install Terraform if not installed
+      block:
+        - name: Add HashiCorp GPG key
+          apt_key:
+            url: https://apt.releases.hashicorp.com/gpg
+            state: present
+          when: ansible_os_family == "Debian"
+
+        - name: Add HashiCorp repository for Debian-based systems
+          apt_repository:
+            repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+            state: present
+          when: ansible_os_family == "Debian"
+
+        - name: Install Terraform on Debian-based systems
+          apt:
+            name: terraform
+            update_cache: yes
+            state: latest
+          when: ansible_os_family == "Debian"
+
+        - name: Add HashiCorp yum repository for RedHat-based systems
+          yum_repository:
+            name: hashicorp
+            description: "HashiCorp Stable - $basearch"
+            baseurl: "https://rpm.releases.hashicorp.com/{{ ansible_distribution | lower }}/$releasever/$basearch/stable"
+            gpgcheck: yes
+            gpgkey: https://rpm.releases.hashicorp.com/gpg
+            enabled: yes
+          when: ansible_os_family == "RedHat"
+
+        - name: Install Terraform on RedHat-based systems
+          yum:
+            name: terraform
+            state: latest
+          when: ansible_os_family == "RedHat"
+
+      when: terraform_installed.rc != 0
