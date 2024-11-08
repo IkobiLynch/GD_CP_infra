@@ -1,0 +1,38 @@
+---
+- name: Deploy Docker container
+  hosts: aws_ec2_instances  # Update this to your inventory group or host pattern
+  become: yes
+  vars:
+    docker_image: "ikobilynch/spring-petclinic:latest"  # Specify your Docker image here
+    container_name: "spring-petclinic"
+
+  tasks:
+    - name: Pull the latest Docker image
+      docker_image:
+        name: "{{ docker_image }}"
+        source: pull
+      register: pulled_image
+
+    - name: Stop and remove existing container if it exists
+      docker_container:
+        name: "{{ container_name }}"
+        state: absent
+      ignore_errors: yes
+
+    - name: Start the new container
+      docker_container:
+        name: "{{ container_name }}"
+        image: "{{ docker_image }}"
+        state: started
+        restart_policy: always
+        ports:
+          - "8080:8080"  
+        env:
+          DB_HOST: "terraform-20241102004139871700000001.cma1xp5df2gi.us-east-1.rds.amazonaws.com"  # Replace with your RDS endpoint
+          DB_PORT: "5432"
+          DB_USERNAME: "myusername"
+          DB_PASSWORD: "{{ lookup('env', 'db_password') }}"
+
+    - name: Print application URL
+      debug:
+        msg: "Application deployed at http://{{ inventory_hostname }}:8080"
