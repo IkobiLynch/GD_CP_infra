@@ -1,9 +1,9 @@
 ---
 - name: Deploy Docker container
-  hosts: aws_ec2_instances  # Update this to your inventory group or host pattern
+  hosts: app_servers  
   become: yes
   vars:
-    docker_image: "ikobilynch/spring-petclinic:latest"  # Specify your Docker image here
+    docker_image: "ikobilynch/spring-petclinic:latest"  
     container_name: "spring-petclinic"
 
   tasks:
@@ -28,7 +28,7 @@
         ports:
           - "8080:8080"  
         env:
-          DB_HOST: "terraform-20241102004139871700000001.cma1xp5df2gi.us-east-1.rds.amazonaws.com"  # Replace with your RDS endpoint
+          DB_HOST: "terraform-20241102004139871700000001.cma1xp5df2gi.us-east-1.rds.amazonaws.com"  
           DB_PORT: "5432"
           DB_USERNAME: "myusername"
           DB_PASSWORD: "{{ lookup('env', 'db_password') }}"
