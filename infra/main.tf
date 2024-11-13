@@ -34,11 +34,6 @@ module "compute" {
   instance_type     = var.instance_type
 }
 
-module "rds" {
-  source = "./modules/RDS"
-  vpc_id = module.network.vpc_id
-}
-
 module "load_balancer" {
   source                = "./modules/load_balancer"
   vpc_id                = module.network.vpc_id
@@ -52,6 +47,12 @@ module "load_balancer" {
     ["instance1", "instance2"],     # Keys (you can add more if needed)
     module.compute.app_instance_ids # List of actual instance IDs
   )
+}
+
+module "rds" {
+  source     = "./modules/RDS"
+  vpc_id     = module.network.vpc_id
+  subnet_ids = module.network.subnet_ids
 }
 
 output "application_instance_ips" {
