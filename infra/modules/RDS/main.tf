@@ -28,12 +28,13 @@ resource "aws_security_group" "rds_security_group" {
 
 # Create the RDS instance for PostgresSQL
 resource "aws_db_instance" "postgres" {
+  identifier = "ilynch-db"
   allocated_storage      = 20
   storage_type           = "gp2"
   engine                 = "postgres"
   engine_version         = "13"
   instance_class         = "db.t3.micro"
-  db_name                = "ilynchDB"
+  db_name                = "springAppDB"
   username               = "myusername" #Should use secrets manager, but can't bada rn
   password               = "mypassword"
   skip_final_snapshot    = true
