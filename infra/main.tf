@@ -36,6 +36,7 @@ module "compute" {
 
 module "rds" {
   source = "./modules/RDS"
+  vpc_id = module.network.vpc_id
 }
 
 module "load_balancer" {

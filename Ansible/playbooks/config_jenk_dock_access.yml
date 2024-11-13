@@ -1,0 +1,30 @@
+---
+- name: Configure Jenkins for Docker Access
+  hosts: jenkins_master, jenkins_slaves
+  become: yes
+  tasks:
+    - name: Add Jenkins user to the Docker group
+      user:
+        name: jenkins
+        groups: docker
+        append: yes
+      register: jenkins_docker_group
+
+    - name: Check Docker socket permissions
+      stat:
+        path: /var/run/docker.sock
+      register: docker_socket
+
+    - name: Ensure Docker socket has correct permissions
+      file:
+        path: /var/run/docker.sock
+        owner: root
+        group: docker
+        mode: '0660'
+      when: docker_socket.stat.exists == True and docker_socket.stat.grp != 'docker'
+
+    - name: Restart Jenkins service (required for group changes to take effect)
+      service:
+        name: jenkins
+        state: restarted
+      when: jenkins_docker_group.changed == True

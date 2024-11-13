@@ -8,6 +8,7 @@ provider "aws" {
 resource "aws_security_group" "rds_security_group" {
   name        = "ilynch-rds-security-group"
   description = "Allow inbound traffic to RDS from application instances"
+  vpc_id = var.vpc_id
 
   # Allow inbound PostgresSQL traffic (port 5432)
   ingress {
