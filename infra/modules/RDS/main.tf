@@ -27,8 +27,8 @@ resource "aws_security_group" "rds_security_group" {
 }
 
 resource "aws_db_subnet_group" "ilynch_subnet_group" {
-  name       = "my-db-subnet-group"
-  subnet_ids = element(var.subnet_ids, count.index)
+  name       = "iko-subnet-group"
+  subnet_ids = var.subnet_ids
 
   tags = {
     Name = "My DB Subnet Group"
