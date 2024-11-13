@@ -28,7 +28,7 @@ resource "aws_security_group" "rds_security_group" {
 
 # Create the RDS instance for PostgresSQL
 resource "aws_db_instance" "postgres" {
-  identifier = "ilynch-db"
+  identifier             = "ilynch-db"
   allocated_storage      = 20
   storage_type           = "gp2"
   engine                 = "postgres"
