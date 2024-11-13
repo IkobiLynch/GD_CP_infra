@@ -49,6 +49,7 @@ resource "aws_db_instance" "postgres" {
   skip_final_snapshot    = true
   publicly_accessible    = false
   vpc_security_group_ids = [aws_security_group.rds_security_group.id]
+  db_subnet_group_name   = aws_db_subnet_group.ilynch_subnet_group
 
   # Optional: Backup & Monitoring
   # backup_retention_period = 8
