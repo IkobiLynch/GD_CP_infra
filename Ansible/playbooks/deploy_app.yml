@@ -3,7 +3,7 @@
   hosts: app_servers  
   become: yes
   vars:
-    docker_image: "ikobilynch/spring-petclinic:latest"  
+    docker_image: "{{ image_name }}"  
     container_name: "spring-petclinic"
 
   tasks:
@@ -28,10 +28,10 @@
         ports:
           - "8080:8080"  
         env:
-          DB_HOST: "terraform-20241102004139871700000001.cma1xp5df2gi.us-east-1.rds.amazonaws.com"  
-          DB_PORT: "5432"
-          DB_USERNAME: "myusername"
-          DB_PASSWORD: "{{ lookup('env', 'db_password') }}"
+          DB_HOST: "{{ POSTGRES_URL }}"  
+          DB_PORT: "{{ db_port }}"
+          DB_USERNAME: "{{ POSTGRES_USER }}"
+          DB_PASSWORD: "{{ POSTGRES_PASS }}"
 
     - name: Print application URL
       debug:
