@@ -21,10 +21,14 @@
         owner: root
         group: docker
         mode: '0660'
-      when: docker_socket.stat.exists == True and docker_socket.stat.grp != 'docker'
+      when: 
+        - docker_socket.stat.exists | default(false)
+        - docker_socket.stat.isreg | default(false)
+        - docker_socket.stat.grp is defined
+        - docker_socket.stat.grp != 'docker'
 
     - name: Restart Jenkins service (required for group changes to take effect)
       service:
         name: jenkins
         state: restarted
-      when: jenkins_docker_group.changed == True
+      when: jenkins_docker_group.changed
