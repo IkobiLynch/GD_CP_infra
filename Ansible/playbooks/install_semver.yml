@@ -1,37 +1,27 @@
 ---
-- name: Install semver globally
+- name: Configure Jenkins environment for semver
   hosts: jenkins_slaves
   become: yes
-
   tasks:
     - name: Ensure pip is installed
-      apt:
+      package:
         name: python3-pip
         state: present
-      register: pip_installed
 
-    - name: Check if semver is already installed
-      command: "pip3 show semver"
-      register: semver_installed
-      ignore_errors: true
-
-    - name: Install semver globally if not present
+    - name: Install semver globally
       pip:
         name: semver
-        executable: pip3
         state: present
-      when: semver_installed.rc != 0
+        executable: pip3
 
     - name: Ensure Jenkins user has semver in PATH
       lineinfile:
-        path: /etc/environment
-        line: "PATH=\"/usr/local/bin:{{ ansible_env.PATH }}\""
-        regexp: '^PATH='
-        state: present
+        path: /etc/profile.d/jenkins.sh
+        line: 'export PATH=$PATH:~/.local/bin'
+        create: yes
       notify: Reload environment
 
   handlers:
     - name: Reload environment
-      command: source /etc/environment
+      shell: source /etc/profile
       become: yes
-      become_user: jenkins
