@@ -1,6 +1,6 @@
 ---
 - name: Install semver globally
-  hosts: jenkins_servers
+  hosts: jenkins_slaves
   become: yes
 
   tasks:
