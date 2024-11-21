@@ -28,10 +28,11 @@
         ports:
           - "80:8080"  
         env:
-          DB_HOST: "{{ POSTGRES_URL }}"  
+          DB_HOST: "{{ DB_HOST }}"  
           DB_PORT: "{{ db_port }}"
           DB_USERNAME: "{{ POSTGRES_USER }}"
           DB_PASSWORD: "{{ POSTGRES_PASS }}"
+          SPRING_PROFILES_ACTIVE: "{{ SPRING_PROFILES_ACTIVE }}"
 
     - name: Print application URL
       debug:
