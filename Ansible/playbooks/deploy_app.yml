@@ -36,4 +36,4 @@
 
     - name: Print application URL
       debug:
-        msg: "Application deployed at http://{{ inventory_hostname }}:8080"
+        msg: "Application deployed at http://{{ inventory_hostname }}:80"
