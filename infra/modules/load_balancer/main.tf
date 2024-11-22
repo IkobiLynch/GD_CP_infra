@@ -13,7 +13,7 @@ resource "aws_lb_target_group" "main" {
   name        = "lb-app-tg-ilynch"
   port        = 80
   protocol    = "HTTP"
-  target_type = "ip"
+  target_type = "instance"
   vpc_id      = var.vpc_id
 
   health_check {
@@ -26,16 +26,6 @@ resource "aws_lb_target_group" "main" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "app_attachment" {
-  for_each = var.instance_ids # Iterate over instances
-
-  target_group_arn = aws_lb_target_group.main.arn
-  target_id        = each.value
-  port             = 80
-
-}
-
-
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.arn
   port              = 80
@@ -47,6 +37,15 @@ resource "aws_lb_listener" "http" {
   }
 }
 
+
+resource "aws_lb_target_group_attachment" "app_attachment" {
+  for_each = var.instance_ids # Iterate over instances
+
+  target_group_arn = aws_lb_target_group.main.arn
+  target_id        = each.value
+  port             = 80
+
+}
 
 
 output "aws_lb_target_group_arn" {
