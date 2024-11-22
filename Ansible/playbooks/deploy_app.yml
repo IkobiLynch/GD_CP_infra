@@ -28,6 +28,7 @@
         ports:
           - "80:8080"  
         env:
+          DB_NAME: "{{ DB_NAME }}"
           DB_HOST: "{{ DB_HOST }}"  
           DB_PORT: "{{ db_port }}"
           DB_USERNAME: "{{ POSTGRES_USER }}"
