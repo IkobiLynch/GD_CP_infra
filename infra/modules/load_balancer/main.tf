@@ -10,11 +10,11 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_lb_target_group" "main" {
-  name     = "lb-app-tg-ilynch"
-  port     = 80
-  protocol = "HTTP"
+  name        = "lb-app-tg-ilynch"
+  port        = 80
+  protocol    = "HTTP"
   target_type = "ip"
-  vpc_id = var.vpc_id
+  vpc_id      = var.vpc_id
 
   health_check {
     path                = "/"
@@ -51,7 +51,7 @@ resource "aws_lb_listener" "http" {
 
 output "aws_lb_target_group_arn" {
   value = aws_lb_target_group.main.arn
-} 
+}
 
 output "dns_name" {
   value = aws_lb.main.dns_name
