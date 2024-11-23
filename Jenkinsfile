@@ -82,7 +82,7 @@ pipeline {
                         echo 'Running Ansible playbooks for software installation...'
 
                         // List of playbooks to run
-                        def playbooks = ['Ansible/playbooks/point_app_to_rds.yml', 'Ansible/playbooks/install_docker_dockercompose.yml', 'Ansible/playbooks/config_jenk_dock_access.yml', 'Ansible/playbooks/fix_jenkins_sudoer.yml','Ansible/playbooks/install_semver.yml']
+                        def playbooks = ['Ansible/playbooks/install_docker_dockercompose.yml', 'Ansible/playbooks/config_jenk_dock_access.yml', 'Ansible/playbooks/fix_jenkins_sudoer.yml','Ansible/playbooks/install_semver.yml']
 
                         for (playbook in playbooks) {
                             ansiblePlaybook inventory: 'Ansible/inventory.ini',
