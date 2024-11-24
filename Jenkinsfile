@@ -25,6 +25,7 @@ pipeline {
             steps {
                 echo 'Running Terraform formatting check...'
                 dir('infra') {
+                    sh 'terraform fmt -recursive'
                     sh 'terraform fmt -check -recursive'
                 }
             }

@@ -34,7 +34,7 @@
           DB_USERNAME: "{{ POSTGRES_USER }}"
           DB_PASSWORD: "{{ POSTGRES_PASS }}"
           SPRING_PROFILES_ACTIVE: "{{ SPRING_PROFILES_ACTIVE }}"
-          spring_datasource_url: jdbc:postgresql://ilinx-db.cma1xp5df2gi.us-east-1.rds.amazonaws.com:5432/springAppDB
+          spring_datasource_url: jdbc:postgresql://ilynch-db.cma1xp5df2gi.us-east-1.rds.amazonaws.com:5432/springAppDB
           spring_datasource_username: "{{ POSTGRES_USER }}"
           spring_datasource_password: "{{ POSTGRES_PASS }}"
 
