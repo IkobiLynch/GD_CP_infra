@@ -6,6 +6,12 @@ resource "aws_instance" "application" {
   key_name               = var.ssh_key_name
   vpc_security_group_ids = [var.security_group_id]
 
+  root_block_device {
+    volume_size = 15
+    volume_type = "gp3"
+    delete_on_termination = true
+  }
+
   user_data = file("${path.root}/../Scripts/install_basic_dependencies.sh")
 
   tags = {
@@ -24,6 +30,7 @@ resource "aws_instance" "jenkins" {
   root_block_device {
     volume_size = 15
     volume_type = "gp3"
+    delete_on_termination = true
   }
 
   user_data = file("${path.root}/../Scripts/install_basic_dependencies.sh")
